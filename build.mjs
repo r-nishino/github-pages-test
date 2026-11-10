@@ -17,10 +17,12 @@ const companies = [
     newsLabel: "ニュース",
     tagline: "中小企業のための、いちばん簡単な勤怠管理。",
     news: [
-      ["2026-11-05", "新サービス", "新サービス「WorkTime シフト」の提供を開始しました", "シフト作成を自動化する新サービス「WorkTime シフト」の提供を開始しました。既存の勤怠データと連携し、希望休と必要人数から最適なシフト案を自動で作成します。"],
-      ["2026-10-20", "料金改定", "料金プライス改定のお知らせ（2027年1月適用）", "2027年1月1日より、スタンダードプランを月額 330 円/人から 380 円/人へ改定します。ライトプランの料金に変更はありません。"],
-      ["2026-09-12", "お知らせ", "年末年始の営業およびサポート対応について", "12月29日から1月3日までサポートデスクをお休みします。"],
-      ["2026-08-01", "機能追加", "打刻アプリが顔認証打刻に対応しました", "モバイルアプリで顔認証による打刻ができるようになりました。"],
+      ["2026-11-12", "新サービス", "勤怠データ分析ダッシュボード「WorkTime Insight」を提供開始", "残業時間や有給取得率を部署別にリアルタイムで可視化する「WorkTime Insight」の提供を開始しました。スタンダードプラン以上で追加料金なしでご利用いただけます。", 6],
+      ["2026-11-11", "料金改定", "ライトプランの料金改定について（2027年2月適用）", "2027年2月1日より、ライトプランを月額 220 円/人から 250 円/人へ改定します。あわせて、無料トライアル期間を 14 日から 30 日へ延長します。", 5],
+      ["2026-11-05", "新サービス", "新サービス「WorkTime シフト」の提供を開始しました", "シフト作成を自動化する新サービス「WorkTime シフト」の提供を開始しました。既存の勤怠データと連携し、希望休と必要人数から最適なシフト案を自動で作成します。", 1],
+      ["2026-10-20", "料金改定", "料金プライス改定のお知らせ（2027年1月適用）", "2027年1月1日より、スタンダードプランを月額 330 円/人から 380 円/人へ改定します。ライトプランの料金に変更はありません。", 2],
+      ["2026-09-12", "お知らせ", "年末年始の営業およびサポート対応について", "12月29日から1月3日までサポートデスクをお休みします。", 3],
+      ["2026-08-01", "機能追加", "打刻アプリが顔認証打刻に対応しました", "モバイルアプリで顔認証による打刻ができるようになりました。", 4],
     ],
   },
   {
@@ -108,7 +110,7 @@ rmSync(OUT, { recursive: true, force: true });
 
 for (const c of companies) {
   const list = (prefix, limit = c.news.length) =>
-    `<ul class="news">${c.news.slice(0, limit).map(([d, t, title], i) => `<li><span class="date">${d}</span><span class="tag">${t}</span><a href="${prefix}${i + 1}.html">${title}</a></li>`).join("")}</ul>`;
+    `<ul class="news">${c.news.slice(0, limit).map(([d, t, title, , id], i) => `<li><span class="date">${d}</span><span class="tag">${t}</span><a href="${prefix}${id ?? i + 1}.html">${title}</a></li>`).join("")}</ul>`;
 
   write(`${c.slug}/index.html`, page(c, 1, `${c.service} | ${c.name}`,
     `<div class="hero"><h1>${c.tagline}</h1><p>${c.service} は、${c.name} が提供するクラウドサービスです。</p></div>
@@ -129,8 +131,8 @@ for (const c of companies) {
   write(`${c.slug}/${c.newsDir}/index.html`, page(c, 2, `${c.newsLabel}一覧 | ${c.service}`,
     `<main><h1>${c.newsLabel}</h1>${list("")}</main>`));
 
-  c.news.forEach(([d, t, title, text], i) => {
-    write(`${c.slug}/${c.newsDir}/${i + 1}.html`, page(c, 2, `${title} | ${c.service}`,
+  c.news.forEach(([d, t, title, text, id], i) => {
+    write(`${c.slug}/${c.newsDir}/${id ?? i + 1}.html`, page(c, 2, `${title} | ${c.service}`,
       `<main><p><span class="date">${d}</span> <span class="tag">${t}</span></p><h1>${title}</h1><p>${text}</p>
 <p><a href="index.html">&laquo; ${c.newsLabel}一覧へ戻る</a></p></main>`));
   });
@@ -148,4 +150,6 @@ ${companies.map((c) => `<li><a href="${c.slug}/index.html">${c.service}（${c.na
 </ul></main>
 <footer>&copy; 2026 勤怠SaaS比較ナビ（デモ用の架空サイト）</footer></body></html>
 `);
+write(".nojekyll", "");
+
 console.log(`generated: ${OUT}`);
